@@ -182,6 +182,177 @@ app.post('/login',async (req,res)=>{
     }
 })
 
+/* Creating endpoint for newcollection data */
+app.get('/newcollection' ,async (req,res)=>{
+    let products = await Product.find({});
+    let newcollection = products.slice(1).slice(-8);
+    console.log("NewCollection Fetched");
+    res.send(newcollection);
+})
+
+/*Creating endpoint for popular in women section */
+
+app.get('/popularwomen' ,async (req,res)=>{
+    let products = await Product.find({category:"women"});
+    let popular_in_women = products.slice(0,4);
+    console.log("Popular in women fetched");
+    res.send(popular_in_women);
+})
+
+/*Creating middelware to fetch user */
+const fetchUser = async (req,res,next)=>{
+    const token = req.header('auth-token');
+    if (!token) {
+        res.status(401).send({errors:"Please authentificate using valid token"})
+    }
+    else{
+        try{
+            const data = jwt.verify(token,'secret_ecom');
+            req.user = data.user;
+            next();
+        }catch (error){
+            res.status(401).send({errors:"please authentificate using a valid token"})
+        }
+    }
+} 
+
+
+/*Creating endpoint for adding products in cartdata */
+  app.post('/addtocart',fetchUser,async (req,res)=>{
+    console.log("Added",req.body.itemId);
+    let userData = await Users.findOne({_id:req.user.id});
+    userData.cartData[req.body.itemId] += 1;
+    await Users.findByIdAndUpdate({_id:req.user.id},{cartData:userData.cartData});
+    res.send("Added")
+
+})  
+
+/* Creating endpoint to remove product from cartdata */
+app.post('/removeFromcart',fetchUser,async (req,res)=>{
+    console.log("Removed",req.body.itemId);
+    let userData = await Users.findOne({_id:req.user.id});
+    if(userData.cartData[req.body.itemId]>0)
+    userData.cartData[req.body.itemId] -= 1;
+    await Users.findByIdAndUpdate({_id:req.user.id},{cartData:userData.cartData});
+    res.send("Removed")
+
+})  
+
+/* Creating endpoint to get cartdata */
+app.post('/getcart',fetchUser,async (req,res)=>{
+    console.log("GetCart");
+    let userData = await Users.findOne({_id:req.user.id});
+    res.json(userData.cartData);
+})
+/*Shema for creating contact */
+const Contact = mongoose.model("Contact",{
+    id:{
+        type:Number,
+        required:true,
+    },
+    fullname:{
+        type:String,
+        required:true,
+    },
+    email:{
+        type:String,
+        required:true,
+    },
+    subject:{
+        type:String,
+        required:true,
+    },
+    message:{
+        type:String,
+        required:true,
+    },
+})
+app.post('/addcontact',async (req,res)=>{
+    let contacts = await Contact.find({});
+    let id;
+    if(contacts.length>0){
+        let last_contact_aray = contacts.slice(-1);
+        let last_contact = last_contact_aray[0];
+        id = last_contact.id+1;
+    }
+    else{
+        id=1;
+    }
+    const contact = new Contact({
+        id:id,
+        fullname:req.body.fullname,
+        email:req.body.email,
+        subject:req.body.subject,
+        message:req.body.message,
+    })
+    console.log(contact);
+    await contact.save();
+    console.log("Saved");
+    res.json({
+        success:true,
+        fullname:req.body.fullname,
+    })
+})
+ /*Shema for creating order */
+ const Order = mongoose.model("Order",{
+    id:{
+        type:Number,
+        required:true,
+    },
+    firstname:{
+        type:String,
+        required:true,
+    },
+    lastname:{
+        type:String,
+        required:true,
+    },
+    country:{
+        type:String,
+        required:true,
+    },
+    city:{
+        type:String,
+        required:true,
+    },
+    phone:{
+        type:Number,
+        required:true,
+    },
+    total:{
+        type:Number,
+        required:true,
+    },
+})
+app.post('/addorder',async (req,res)=>{
+    let orders = await Order.find({});
+    let id;
+    if(orders.length>0){
+        let last_order_aray = orders.slice(-1);
+        let last_order = last_order_aray[0];
+        id = last_order.id+1;
+    }
+    else{
+        id=1;
+    }
+    const order = new Order({
+        id:id,
+        firstname:req.body.firstname,
+        lastname:req.body.lastname,
+        country:req.body.country,
+        city:req.body.city,
+        phone:req.body.phone,
+        total:req.body.total,
+    })
+    console.log(order);
+    await order.save();
+    console.log("Saved");
+    res.json({
+        success:true,
+        firstname:req.body.firstname,
+    })
+})
+
 
 
 
