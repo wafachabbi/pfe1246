@@ -7,7 +7,12 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
 const cors = require("cors");
-const { error } = require("console");
+const bodyParser = require('body-parser');
+const nodemailer = require('nodemailer');
+const mailgun = require('mailgun-js')({
+    apiKey: 'YOUR_MAILGUN_API_KEY',
+    domain: 'YOUR_MAILGUN_DOMAIN'
+});
 
 /*initialized*/
 app.use(express.json());
@@ -133,7 +138,11 @@ const Users = mongoose.model('Users',{
            default:Date.naw,}
 
 })
-
+app.get('/allusers',async (req,res)=>{
+    let users = await Users.find({});
+    console.log("All Users Fetched");
+    res.send(users);
+})
 /* Creating endpoint for regitering user */
 app.post('/signup',async (req,res)=>{
     let check = await Users.findOne({email:req.body.email});
@@ -169,6 +178,114 @@ app.post('/login',async (req,res)=>{
         if (passCompare) {
             const data = {
                 user : { id:user.id }
+            }
+            const token = jwt.sign(data,'secret_ecom');
+            res.json({success:true,token});
+        }
+        else {
+            res.json({success:false,errors:"Wrong Password"});
+        }
+    }
+    else {
+        res.json({success:false,errors:"Wrong Email Id"});
+    }
+})
+app.post('/forgotpassword',async (req,res)=>{
+    let user = await Users.findOne({email:req.body.email});
+    if (user) {
+        const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET,
+            {
+                expiresIn: '3h',
+            });
+            user.resetToken = token;
+            await user.save();
+
+            //resetLink
+            console.log(`${baseUrl()}/resetpassword/${token}`);
+            mailgun().messages().send({
+                from: 'Amazona <me@mg.yourdomain.com>',
+                to: `${user.name} <${user.email}`,
+                subject : `Reset password`,
+                html: `
+                <p>Please Click the following link to reset your password : </p>
+                <a href="${baseUrl()}/resetpassword/${token}"}>Reset Password </a>
+                `,
+            },
+            (error , body) => {
+                console.log(error);
+                console.log(body);
+            }
+            );
+            res.send({message: 'We sent reset password link to your email.' });
+        }
+           else {
+            res.status(404).send({message : 'User not found'});
+           }
+}) ;
+
+app.post('/resetpassword', async (req, res) => {
+    try {
+        const decodedToken = jwt.verify(req.body.token, process.env.JWT_SECRET);
+        const user = await Users.findOne({ resetToken: req.body.token });
+
+        if (!user) {
+            return res.status(404).send({ message: 'User not found' });
+        }
+        res.send({ message: 'Password reset successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Internal Server Error' });
+    }
+});
+
+
+const Admins = mongoose.model('Admins',{
+    name:{ type : String, },
+    email:{ type : String, 
+            unique:true, },
+    password:{ type : String, },
+    cartData:{ type : Object,},
+    date:{ type : Date,
+           default:Date.naw,}
+
+})
+app.get('/alladmins',async (req,res)=>{
+    let admins = await Admins.find({});
+    console.log("All Admins Fetched");
+    res.send(admins);
+})
+app.post('/signupadmin',async (req,res)=>{
+    let check = await Admins.findOne({email:req.body.email});
+    if (check) {
+        return res.status(400).json({success:false,errors:"esisting admin found with same email address"})
+    }
+    let cart = {};
+    for (let i=0; i < 300; i++){
+        cart[i]=0;
+    }
+    const admin = new Admins({
+        name:req.body.username,
+        email:req.body.email,
+        password:req.body.password,
+        cartData:cart,
+    })
+    await admin.save();
+    const data = {
+        admin:{
+            id:admin.id
+        }
+    }
+    const token = jwt.sign(data,'secret_ecom');
+    res.json({success:true,token})
+
+})
+app.post('/loginadmin',async (req,res)=>{
+    let admin = await Admins.findOne({email:req.body.email});
+    if (admin) {
+        const passCompare = req.body.password === admin.password;
+        if (passCompare) {
+            const data = {
+                admin : { id:admin.id }
             }
             const token = jwt.sign(data,'secret_ecom');
             res.json({success:true,token});
@@ -293,6 +410,11 @@ app.post('/addcontact',async (req,res)=>{
         fullname:req.body.fullname,
     })
 })
+app.get('/allcontacts',async (req,res)=>{
+    let contacts = await Contact.find({});
+    console.log("All Contactss Fetched");
+    res.send(contacts);
+})
  /*Shema for creating order */
  const Order = mongoose.model("Order",{
     id:{
@@ -352,6 +474,46 @@ app.post('/addorder',async (req,res)=>{
         firstname:req.body.firstname,
     })
 })
+app.get('/allorders',async (req,res)=>{
+    let orders = await Order.find({});
+    console.log("All Orders Fetched");
+    res.send(orders);
+})
+
+const Promo = mongoose.model("Promo",{
+    id:{
+        type:Number,
+        required:true,
+    },
+    promocode:{
+        type:String,
+        required:true,
+    },
+})
+app.post('/addpromo',async (req,res)=>{
+    let promos = await Promo.find({});
+    let id;
+    if(promos.length>0){
+        let last_promo_aray = promos.slice(-1);
+        let last_promo = last_promo_aray[0];
+        id = last_promo.id+1;
+    }
+    else{
+        id=1;
+    }
+    const promo = new Promo({
+        id:id,
+        promocode:req.body.promocode,
+    })
+    console.log(promo);
+    await promo.save();
+    console.log("Saved");
+    res.json({
+        success:true,
+        promocode:req.body.promocode,
+    })
+})
+
 
 
 
