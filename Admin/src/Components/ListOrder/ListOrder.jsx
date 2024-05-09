@@ -30,7 +30,7 @@ const ListOrder = () =>{
             {allorders.map((order,index)=>{
               return<> 
               <div key={index} className="listproduct-format-main listproduct-format">
-              <p>{order.firstname}</p>
+               <p>{order.firstname}</p>
                 <p>{order.lastname}</p>
                 <p>{order.country}</p>
                 <p>{order.city}</p>

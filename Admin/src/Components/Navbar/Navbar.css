@@ -2,10 +2,20 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 15px 60px;
+    padding: 5px 60px;
     box-shadow: 0px 1px 3px -2px #000;
     margin-bottom: 1px;
     background: white;
+}
+.nav-logo{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.nav-logo p{
+    color: #171717;
+    font-size: 18px;
+    font-weight: 400;
 }
 .nav-logo{
     width: 200px;

@@ -1,13 +1,18 @@
 import React from "react";
 import './Navbar.css';
-import { Link } from 'react-router-dom';
-import navlogo from '../../assets/nav-logo.svg';
-import navProfile from '../../assets/nav-profile.svg';
+//import { Link } from 'react-router-dom';
+//import navlogo from '../../assets/nav-logo.svg';
+//import navProfile from '../../assets/nav-profile.svg';
+import logo from '../../assets/logo.png'
+
 
 const Navbar = () =>{
   return (
     <div className='navbar'>
-        <img className="nav-logo" src={navlogo} alt="" />
+       <div className="nav-logo"> 
+        <img src={logo} alt="" />
+        <p>CH COLLECTION</p>
+        </div>
         <div className="nav-login-cart">
             {localStorage.getItem('auth-token')
             ? <button onClick={()=>{localStorage.removeItem('auth-token');

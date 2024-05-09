@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # MongoDB service
+  mongodb:
+    restart: always
+    image: mongo:4.4
+    container_name: wafachabbi/mongodb:4.4
+    ports:
+      - "27017:27017"
+  backend:
+    image: wafachabbi/backend:latest
+    build: 
+      context: ./
+      dockerfile: backend.dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/mern_app
+    depends_on:
+      - mongodb
+    restart: always
+  admin:
+    build: 
+      context: ./
+      dockerfile: admin.dockerfile
+    image: wafachabbi/admin:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:4000
+    depends_on:
+      - backend
+    restart: always
+  frontend:
+    build: 
+      context: ./
+      dockerfile: frontend.dockerfile
+    image: wafachabbi/frontend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:4000
+    depends_on:
+      - backend
+    restart: always
