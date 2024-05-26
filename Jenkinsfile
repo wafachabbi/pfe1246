@@ -39,7 +39,7 @@ pipeline {
         stage('Docker Build & Push ') {
             steps {
                    script {
-                        sh "docker-compose build -d" 
+                        sh "docker-compose build " 
                         withDockerRegistry(credentialsId:'wafachabbi' , toolName: 'docker') {
                             sh "docker push wafachabbi/backend:latest"
                             sh "docker push wafachabbi/frontend:latest"
