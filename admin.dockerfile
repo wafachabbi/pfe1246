@@ -13,6 +13,6 @@ RUN        npm install
 COPY       ./Admin .
 
 
-EXPOSE     4001
+EXPOSE     5173
 
 CMD        ["npm", "run", "dev"]

@@ -15,7 +15,7 @@ const ListOrder = () =>{
     },[])
    
     return (
-        <div className='list-product'>
+        <div className='list-productt'>
           <h1>All Orders List</h1>
           <div className="listproduct-format-main">
             <p>FirstName</p>
@@ -29,7 +29,7 @@ const ListOrder = () =>{
             <hr />
             {allorders.map((order,index)=>{
               return<> 
-              <div key={index} className="listproduct-format-main listproduct-format">
+              <div key={index} className="listproduct-format-mainn ">
                <p>{order.firstname}</p>
                 <p>{order.lastname}</p>
                 <p>{order.country}</p>

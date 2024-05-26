@@ -28,18 +28,18 @@ app.get("/",(req,res)=>{
 })
 
 /*Image storage engine */
-const storage = multer.diskStorage({
+const storage = multer.diskStorage({  
     destination: './upload/images',
     filename:(req,file,cb)=>{
         return cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`)
     }
 })
 
-const upload = multer({storage:storage})
+const upload = multer({storage:storage}) /* multer utilisé pour téléverser des fichiers */
 
 /*Creating Upload Endpoint for images */
 app.use('/images',express.static('upload/images'))
-app.post("/upload",upload.single('product'),(req,res)=>{
+app.post("/upload",upload.single('product'),(req,res)=>{ /*traite un seul fichier et Il extrait le fichier téléversé et le sauvegarde selon la configuration storage */
     res.json({
         success:1,
         image_url:`http://localhost:${port}/images/${req.file.filename}`
@@ -138,6 +138,8 @@ const Users = mongoose.model('Users',{
            default:Date.naw,}
 
 })
+/* Creating API for getting all users */
+
 app.get('/allusers',async (req,res)=>{
     let users = await Users.find({});
     console.log("All Users Fetched");
@@ -490,32 +492,6 @@ const Promo = mongoose.model("Promo",{
         required:true,
     },
 })
-app.post('/addpromo',async (req,res)=>{
-    let promos = await Promo.find({});
-    let id;
-    if(promos.length>0){
-        let last_promo_aray = promos.slice(-1);
-        let last_promo = last_promo_aray[0];
-        id = last_promo.id+1;
-    }
-    else{
-        id=1;
-    }
-    const promo = new Promo({
-        id:id,
-        promocode:req.body.promocode,
-    })
-    console.log(promo);
-    await promo.save();
-    console.log("Saved");
-    res.json({
-        success:true,
-        promocode:req.body.promocode,
-    })
-})
-
-
-
 
 
 app.listen(port,(error)=>{
