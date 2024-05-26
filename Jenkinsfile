@@ -19,7 +19,7 @@ pipeline {
                 dir('Backend'){
                   sh 'npm install'
                 }
-                dir('frontend'){
+                dir('Frontend'){
                   sh 'npm install'
                 }
                 dir('Admin'){
