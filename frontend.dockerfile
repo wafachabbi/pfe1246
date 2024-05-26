@@ -3,13 +3,13 @@ FROM       node:alpine
 WORKDIR    /app
 
 
-COPY       ./frontend/package*.json ./
+COPY       ./Frontend/package*.json ./
 
 
 RUN        npm install
 RUN        npm install -g react-scripts
 
-COPY       ./frontend/ .
+COPY       ./Frontend/ .
 
 
 EXPOSE     3000
