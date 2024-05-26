@@ -5,7 +5,7 @@ services:
   mongodb:
     restart: always
     image: mongo:4.4
-    container_name: wafachabbi/mongodb:4.4
+    container_name: mongodb
     ports:
       - "27017:27017"
   backend:
