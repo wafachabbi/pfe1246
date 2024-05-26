@@ -28,14 +28,14 @@ pipeline {
                 }
             }
         }
-/*
+
         stage('Sonar Analysis') {
             steps {
-                sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.url=http://192.168.45.120:9000/ -Dsonar.login=squ_b8a0a8deff1f6a1e636eff0a5e712eade98674b8 -Dsonar.projectName=pfe_project \
+                sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.url=http://192.168.45.120:9000/ -Dsonar.login=squ_06abf45f6d75107c9ee2337a6a2354db38eeca88 -Dsonar.projectName=pfe_project \
                    -Dsonar.sources=. \
                    -Dsonar.projectKey=pfe_project '''
             }
-        }*/
+        }
         stage('Docker Build & Push ') {
             steps {
                    script {
