@@ -4,10 +4,9 @@ pipeline {
     tools{
         nodejs 'nodejs21'  
     } 
-/*   
     environment{
         SCANNER_HOME= tool 'sonar-scanner'
-    }*/
+    }
     stages {
         stage('git-checkout') {
             steps {
