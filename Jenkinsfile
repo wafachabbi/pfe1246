@@ -30,7 +30,7 @@ pipeline {
 
         stage('Sonar Analysis') {
             steps {
-                sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.url=http://192.168.45.123:9000/ -Dsonar.login=squ_06abf45f6d75107c9ee2337a6a2354db38eeca88 -Dsonar.projectName=pfe_project \
+                sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.url=http://192.168.35.250:9000/ -Dsonar.login=squ_7ae427a92541eb4d165af35fc600643210fa5bf0 -Dsonar.projectName=pfe_project \
                    -Dsonar.sources=. \
                    -Dsonar.projectKey=pfe_project '''
             }
