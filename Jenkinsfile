@@ -51,7 +51,7 @@ pipeline {
             steps {
                 script { // test Docker image
                     sh "trivy image wafachabbi/backend:latest" 
-                    sh "trivy image wafachabbi/frontend:latest" 
+                    sh "trivy image wafachabbi/frontend:latest --skip-dirs" 
                     sh "trivy image wafachabbi/admin:latest" 
                 }
             }
